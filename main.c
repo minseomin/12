@@ -20,8 +20,8 @@ int main(int argc, char *argv[]) {
 	
 	bingo_init();
 	bingo_printboard();
-	bingo_inputNum(21);
-
+	bingo_inputNum(1);
+	bingo_printboard();
 	
 	//initialize bingo board 
 	

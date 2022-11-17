@@ -53,11 +53,33 @@ void bingo_printboard(void) //얘도
 
 void bingo_inputNum(int sel) //정수 입력 값이 필요하니까 입력에 int, 근데 출력은 필요 없으니까 void. 
 {
+	bingoboard[numberStatus[sel-1]/N_SIZE][numberStatus[sel-1]%N_SIZE] = BINGONUM_HOLE;	
 	
 }
+
+
 int bingo_countCompletedLine(void) //몇 줄이 생겼다, 즉 리턴값은 정수로 나와야 하니까 int 로 정의해주기.
 {
 	
 }
 
- 
+/*int get_number(void)
+{
+	int selNum = 0;
+	
+	do {
+		printf("select a number : "); // 안내문구 출력  
+		scanf("%d", $selNum); // 번호 입력 받음  
+		fflush(stdin);  //표준입력 스트림 비우기  
+		
+		if (bingo_checkNum(selNum) == BINGO_NUMSTATUS_ABSENT)
+		{
+			printf("%i is not on the board! select other one. \n", selNum);// 입력번호가 잘못되었거나 이미 나온 번호이면 잘못되었다고 출력  
+			
+		}
+	}while (selNum <1 || selNum > N_SIZE || bingo_checkNum(selNum) == BINGO_NUMSTATUS_ABSENT)// 제대로된 입력이 아니면 다시  
+	
+	return selNum ;
+}
+
+ */
