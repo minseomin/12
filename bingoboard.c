@@ -8,6 +8,15 @@
 static int bingoboard[N_SIZE][N_SIZE]; //2차원 배열의 빙고보드 생성하기  
 static int numberStatus[N_SIZE*N_SIZE];
  
+int bingo_checkNum(int selNum)
+{
+	if (numberStatus[selNum-1] == BINGONUM_HOLE)
+		return BINGO_NUMSTATUS_ABSENT;
+		
+	return BINGO_NUMSTATUS_PRESENT; 
+	
+}
+
 void bingo_init(void)
 {
 	int i,j;
@@ -51,6 +60,7 @@ void bingo_printboard(void) //얘도
 	printf("====================\n\n");
 }
 
+
 void bingo_inputNum(int sel) //정수 입력 값이 필요하니까 입력에 int, 근데 출력은 필요 없으니까 void. 
 {
 	bingoboard[numberStatus[sel-1]/N_SIZE][numberStatus[sel-1]%N_SIZE] = BINGONUM_HOLE;	
@@ -58,28 +68,80 @@ void bingo_inputNum(int sel) //정수 입력 값이 필요하니까 입력에 int, 근데 출력은
 }
 
 
-int bingo_countCompletedLine(void) //몇 줄이 생겼다, 즉 리턴값은 정수로 나와야 하니까 int 로 정의해주기.
-{
-	
-}
 
-/*int get_number(void)
+int bingo_countCompletedLine(void) // 빙고 몇개가 완성됐나  
 {
-	int selNum = 0;
+	int i,j ;
+	int cnt = 0;
+	int checkBingo;
 	
-	do {
-		printf("select a number : "); // 안내문구 출력  
-		scanf("%d", $selNum); // 번호 입력 받음  
-		fflush(stdin);  //표준입력 스트림 비우기  
-		
-		if (bingo_checkNum(selNum) == BINGO_NUMSTATUS_ABSENT)
-		{
-			printf("%i is not on the board! select other one. \n", selNum);// 입력번호가 잘못되었거나 이미 나온 번호이면 잘못되었다고 출력  
-			
+	//check row 행에 대해서 따지는 거  
+	for (i=0;i<N_SIZE;i++){
+		checkBingo = 1; //깃발을 올리고 시작. 번호가 살아있으면 깃발을 내리는 거임. 
+		for (j=0;j<N_SIZE;j++){
+			if (bingoboard[i][j] > 0) {
+				checkBingo = 0;
+				break;
+			}
 		}
-	}while (selNum <1 || selNum > N_SIZE || bingo_checkNum(selNum) == BINGO_NUMSTATUS_ABSENT)// 제대로된 입력이 아니면 다시  
-	
-	return selNum ;
-}
+		if (checkBingo == 1){
+		cnt++;
+	}
 
- */
+//col 
+	for (j=0;j<N_SIZE;j++)
+	{
+		checkBingo=1;
+		
+		for (i=0;i<N_SIZE;j++){
+			if (bingoboard[i][j] > 0)
+			 {
+				checkBingo = 0;
+				break;
+			}
+		}
+		if (checkBingo == 1)
+		cnt++;
+	}
+	
+	return cnt;
+	}
+ // 대각선 
+ 	checkBingo=1;
+ 	for(i=0;i<N_SIZE;i++)
+ 	{
+ 		if (bingoBoard[i][j]>0)
+ 	{
+ 			checkBingo = 0;
+ 			break;
+	 }
+ }
+
+	if(chenkBingo ==1 )
+		cnt++;
+		
+	checkBingo=1;
+	for (i=0;i<N_SIZE;i++)
+	{
+		if (bingoBoard[i][N_SIZE-i-1]>0)
+		{
+			checkBingo = 0;
+			break;
+		}
+	}
+	if (checkBingo ==1 )
+	cnt ++;
+	
+	return cnt;	
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+
