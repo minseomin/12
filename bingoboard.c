@@ -1,147 +1,144 @@
-#include "bingoboard.h" //헤더를 소스코드에서 가져왔다. 즉 헤더 안에 있는 내용이 여기 다 복붙이 되는 거임.  
-#include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
+#include "bingoBoard.h"
 
-#define BINGONUM_HOLE         -1
+#define BINGONUM_HOLE		-1
 
-static int bingoboard[N_SIZE][N_SIZE]; //2차원 배열의 빙고보드 생성하기  
+static int bingoBoard[N_SIZE][N_SIZE];
 static int numberStatus[N_SIZE*N_SIZE];
- 
+
+
 int bingo_checkNum(int selNum)
 {
 	if (numberStatus[selNum-1] == BINGONUM_HOLE)
 		return BINGO_NUMSTATUS_ABSENT;
 		
-	return BINGO_NUMSTATUS_PRESENT; 
-	
+	return BINGO_NUMSTATUS_PRESENT;
 }
 
 void bingo_init(void)
 {
-	int i,j;
-	int cnt = 1;
+	int i, j, k;
+	int randNum; //랜덤 번호 (몇번쨰 숫자를 선택) 
+	int maxNum = N_SIZE*N_SIZE; //현재 남아있는 숫 
 	
-	for (i=0; i<N_SIZE;i++)
+	for (i=0;i<N_SIZE*N_SIZE;i++)
+		numberStatus[i] = BINGO_NUMSTATUS_ABSENT;
+		
+	for (i=0;i<N_SIZE;i++)
 		for (j=0;j<N_SIZE;j++)
 		{
-			if (cnt == 15)
-			{
-			bingoboard[i][j] = BINGONUM_HOLE;
-			numberStatus[cnt-1] = BINGONUM_HOLE;
+			randNum = rand()%maxNum; //랜덤 숫자 선택  
 			
-			cnt++;
+			for (k=0;k<N_SIZE*N_SIZE;k++)//각 숫자에 대해 따져보기  
+			{
+				if (numberStatus[k] == BINGO_NUMSTATUS_ABSENT ) //숫자 k+1이 아직 할당이 안되어 있다면  
+				{
+					if (randNum == 0) //k+1 이 randNum번째 숫자이면  
+						break;
+					else
+						randNum--; //그렇지 않으면 하나 줄임  
+				}
 			}
-		else
-		{
-			numberStatus[cnt-1] = i*N_SIZE +j;
-			bingoboard[i][j] = cnt++;
+			//숫자 k+1을 할당 
+			numberStatus[k] = i*N_SIZE + j;
+			bingoBoard[i][j] = k+1;
+			maxNum--;
 		}
-		printf("\n");
-		}
-	printf("============================\n\n");
 }
 
-
-void bingo_printboard(void) //얘도 
+void bingo_print(void) 
 {
-	int i, j;
-	
-	printf("=======================\n");
+	int i,j;
+	printf("==================================\n");
 	for (i=0;i<N_SIZE;i++) {
-		for (j=0;j<N_SIZE;j++) {
-			if (bingoboard[i][j] == BINGONUM_HOLE)
+		for (j=0;j<N_SIZE;j++)
+		{
+			if (bingoBoard[i][j] == BINGONUM_HOLE)
 				printf("X\t");
 			else
-				printf("%i\t",bingoboard[i][j]);
+				printf("%i\t", bingoBoard[i][j]);
 		}
-	printf("\n");
+		printf("\n");
 	}
-	printf("====================\n\n");
-}
-
-
-void bingo_inputNum(int sel) //정수 입력 값이 필요하니까 입력에 int, 근데 출력은 필요 없으니까 void. 
-{
-	bingoboard[numberStatus[sel-1]/N_SIZE][numberStatus[sel-1]%N_SIZE] = BINGONUM_HOLE;	
 	
+	printf("==================================\n\n");
 }
 
-
-
-int bingo_countCompletedLine(void) // 빙고 몇개가 완성됐나  
+void bingo_inputNum(int sel)
 {
-	int i,j ;
-	int cnt = 0;
+	int row, col;
+	row = numberStatus[sel-1]/N_SIZE;
+	col = numberStatus[sel-1]%N_SIZE;
+	
+	bingoBoard[row][col] = BINGONUM_HOLE;
+	numberStatus[sel-1] = BINGONUM_HOLE;
+}
+
+int bingo_countCompletedLine(void)
+{
+	int i,j;
+	int cnt=0;
 	int checkBingo;
 	
-	//check row 행에 대해서 따지는 거  
-	for (i=0;i<N_SIZE;i++){
-		checkBingo = 1; //깃발을 올리고 시작. 번호가 살아있으면 깃발을 내리는 거임. 
-		for (j=0;j<N_SIZE;j++){
-			if (bingoboard[i][j] > 0) {
+	//row
+	for (i=0;i<N_SIZE;i++)
+	{
+		checkBingo=1;
+		for (j=0;j<N_SIZE;j++)
+			if (bingoBoard[i][j] > 0)
+			{
 				checkBingo = 0;
-				break;
+				break;	
 			}
-		}
-		if (checkBingo == 1){
-		cnt++;
+		
+		if (checkBingo == 1)
+			cnt ++;
 	}
 
-//col 
+	//col
 	for (j=0;j<N_SIZE;j++)
 	{
 		checkBingo=1;
-		
-		for (i=0;i<N_SIZE;j++){
-			if (bingoboard[i][j] > 0)
-			 {
+		for (i=0;i<N_SIZE;i++)
+			if (bingoBoard[i][j] > 0)
+			{
 				checkBingo = 0;
-				break;
+				break;	
 			}
-		}
+		
 		if (checkBingo == 1)
-		cnt++;
+			cnt ++;
 	}
 	
-	return cnt;
-	}
- // 대각선 
- 	checkBingo=1;
- 	for(i=0;i<N_SIZE;i++)
- 	{
- 		if (bingoBoard[i][j]>0)
- 	{
- 			checkBingo = 0;
- 			break;
-	 }
- }
 
-	if(chenkBingo ==1 )
-		cnt++;
+	//diagonal
+	checkBingo=1;
+	for (i=0;i<N_SIZE;i++)
+	{
+		if (bingoBoard[i][i] > 0)
+		{
+			checkBingo = 0;
+			break;	
+		}
+	}
+	if (checkBingo == 1)
+		cnt ++;
+		
+		
 		
 	checkBingo=1;
 	for (i=0;i<N_SIZE;i++)
 	{
-		if (bingoBoard[i][N_SIZE-i-1]>0)
+		if (bingoBoard[i][N_SIZE-i-1] > 0)
 		{
 			checkBingo = 0;
-			break;
+			break;	
 		}
 	}
-	if (checkBingo ==1 )
-	cnt ++;
+	if (checkBingo == 1)
+		cnt ++;
+		
 	
-	return cnt;	
-
- 
- 
- 
- 
- 
- 
- 
- 
- 
-  
-
+	
+	return cnt;
+}
